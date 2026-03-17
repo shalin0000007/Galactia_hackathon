@@ -1,52 +1,50 @@
 /**
  * Research Agent — The analyst
- * 
+ *
  * Handles research tasks: market analysis, data collection,
  * comparing options, gathering information.
  * 
- * Note: Person B may replace this with their own implementation.
- * This is Person A's default so the chain works end-to-end.
+ * Merged: Person A (Groq + LangChain) + Person B (task detection + structured JSON)
  */
 
 const { ChatGroq } = require('@langchain/groq');
 const { HumanMessage, SystemMessage } = require('@langchain/core/messages');
 const config = require('../config');
 
-const RESEARCH_SYSTEM_PROMPT = `You are the Research Agent in AgentPay — an AI-powered autonomous payment system.
+const RESEARCH_SYSTEM_PROMPT = `You are the Research Agent in the AgentPay system.
+Your job is to analyze cryptocurrency markets and collect financial data.
 
-Your job:
-1. Receive a research task (e.g., analyze market, collect data, compare options)
-2. Perform thorough analysis with realistic data
-3. Return structured findings
+IMPORTANT — always return your answer as valid JSON with this structure:
 
-You handle:
-- analyze_market: Analyze cryptocurrency or financial market trends
-- collect_data: Gather and organize data on a topic
-- compare_options: Compare multiple options with pros/cons
-
-Rules:
-- Always return valid JSON (no markdown, no code blocks)
-- Include realistic mock data (prices, percentages, rankings)
-- Be thorough but concise
-- Include confidence scores and data sources
-
-Response format:
 {
   "status": "completed",
-  "research_type": "analyze_market",
+  "taskType": "analyze_market" | "collect_data",
+  "summary": "Brief one-line summary of findings",
   "findings": {
     "top_picks": [
-      { "name": "Ethereum", "symbol": "ETH", "price": 3450.25, "change_24h": "+2.3%", "recommendation": "buy" }
+      {
+        "name": "Asset name",
+        "symbol": "Ticker",
+        "analysis": "Your analysis",
+        "score": 8,
+        "metrics": { "price": "$3400", "change_24h": "+2.3%" }
+      }
     ],
-    "analysis": "Based on market trends...",
-    "confidence": 0.82
+    "analysis": "Overall analysis paragraph",
+    "confidence": 0.85
   },
-  "summary": "Analyzed top 5 cryptocurrencies. ETH shows strongest momentum."
-}`;
+  "recommendation": "Your overall recommendation",
+  "sources": ["Simulated data sources used"]
+}
+
+Be thorough and specific. Provide realistic, well-reasoned analysis.
+Always return ONLY the JSON object, no other text or markdown.`;
 
 class ResearchAgent {
   constructor() {
     this.name = 'Research Agent';
+    this.role = 'research';
+    this.capabilities = ['analyze_market', 'collect_data'];
     this.model = new ChatGroq({
       model: 'llama-3.3-70b-versatile',
       temperature: config.ai.research.temperature,
@@ -62,11 +60,14 @@ class ResearchAgent {
    */
   async research(taskDescription) {
     const startTime = Date.now();
+    const taskType = this._detectTaskType(taskDescription);
 
     try {
+      const enrichedPrompt = `[Task Type: ${taskType}]\n\n${taskDescription}`;
+
       const response = await this.model.invoke([
         new SystemMessage(RESEARCH_SYSTEM_PROMPT),
-        new HumanMessage(`Research this: ${taskDescription}`),
+        new HumanMessage(`Research this: ${enrichedPrompt}`),
       ]);
 
       const content = response.content.trim();
@@ -82,9 +83,11 @@ class ResearchAgent {
       return {
         agent: 'research',
         status: parsed.status || 'completed',
-        research_type: parsed.research_type || 'general',
+        research_type: parsed.taskType || taskType,
         findings: parsed.findings || {},
         summary: parsed.summary || 'Research completed',
+        recommendation: parsed.recommendation || null,
+        confidence: parsed.findings?.confidence || null,
         duration_ms: Date.now() - startTime,
       };
     } catch (error) {
@@ -98,6 +101,25 @@ class ResearchAgent {
         duration_ms: Date.now() - startTime,
       };
     }
+  }
+
+  /**
+   * Infer the task type from the description keywords (Person B logic).
+   * @param {string} description
+   * @returns {'analyze_market'|'collect_data'}
+   */
+  _detectTaskType(description) {
+    const lower = description.toLowerCase();
+    if (
+      lower.includes('analyze') ||
+      lower.includes('analysis') ||
+      lower.includes('compare') ||
+      lower.includes('evaluate') ||
+      lower.includes('best')
+    ) {
+      return 'analyze_market';
+    }
+    return 'collect_data';
   }
 }
 

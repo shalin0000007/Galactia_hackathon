@@ -10,8 +10,9 @@ const config = {
   jwtExpiresIn: '24h',
 
   // AI Provider
-  aiProvider: process.env.AI_PROVIDER || 'openai',
+  aiProvider: process.env.AI_PROVIDER || 'groq',
   openaiApiKey: process.env.OPENAI_API_KEY,
+  groqApiKey: process.env.GROQ_API_KEY,
   anthropicApiKey: process.env.ANTHROPIC_API_KEY,
 
   // Database
@@ -31,20 +32,20 @@ const config = {
     standardRequestsPerMinute: 60,
   },
 
-  // AI Model Settings for Agents
+  // AI Model Settings for Agents (using Groq-hosted models)
   ai: {
     manager: {
-      model: 'gpt-4o-mini',
+      model: 'llama-3.3-70b-versatile',
       temperature: 0.7,
       maxTokens: 1000,
     },
     research: {
-      model: 'gpt-4o-mini',
+      model: 'llama-3.3-70b-versatile',
       temperature: 0.4,
       maxTokens: 800,
     },
     execution: {
-      model: 'gpt-4o-mini',
+      model: 'llama-3.3-70b-versatile',
       temperature: 0.2,
       maxTokens: 500,
     },
