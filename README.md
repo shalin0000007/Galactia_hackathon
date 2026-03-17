@@ -1,6 +1,6 @@
-# CodeMind AI
+# AgentPay
 
-> AI-Powered Code Editor — Write less, build more.
+> AI-Powered Autonomous Agent Payment System
 
 ## 🚀 Quick Start
 
@@ -14,41 +14,48 @@ cp .env.example .env
 npm run dev
 ```
 
-### Frontend
-
-```bash
-cd frontend
-npm install
-npm run dev
-```
-
 ## 📁 Project Structure
 
 ```
-├── backend/          # Node.js + Express API server
+├── backend/
+│   ├── server.js              # Express entry point (port 3000)
+│   ├── testAgent.js           # LangChain + OpenAI test script
 │   ├── src/
-│   │   ├── config/       # Environment & app config
-│   │   ├── middleware/   # JWT auth, rate limiting
-│   │   ├── routes/       # API route handlers
-│   │   ├── services/     # AI service, execution service
-│   │   └── prompts/      # Prompt engineering templates
-│   └── server.js         # Express entry point
-├── frontend/         # Next.js + Monaco Editor UI
-│   └── src/
-│       ├── components/   # Editor, Sidebar, Toolbar, etc.
-│       └── lib/          # API client, utilities
-└── docs/             # Architecture diagrams & docs
+│   │   ├── config/
+│   │   │   ├── index.js       # Environment & app config
+│   │   │   └── agentWallets.js # Manager, Research, Execution wallets
+│   │   ├── middleware/
+│   │   │   ├── auth.js        # JWT auth (dev bypass)
+│   │   │   └── rateLimiter.js # Rate limiting
+│   │   ├── routes/
+│   │   │   └── wallet.js      # Wallet API routes
+│   │   └── services/
+│   │       └── walletService.js # Wallet operations (mock → WDK)
+│   ├── .env.example
+│   └── package.json
+├── frontend/                   # Dashboard (Person B)
+└── docs/
 ```
 
 ## 🛠 Tech Stack
 
 | Layer | Technology |
 |-------|-----------|
-| Frontend | React + Next.js + Monaco Editor |
 | Backend | Node.js + Express |
-| AI Engine | OpenAI API (GPT-4o-mini) |
-| Database | PostgreSQL + Redis |
-| Execution | Judge0 (sandboxed) |
+| AI Engine | LangChain + OpenAI |
+| Blockchain | WDK (Web5 Decentralized Key) |
+| Frontend | Next.js + Tailwind CSS |
+
+## 💰 API Endpoints
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/health` | Health check |
+| GET | `/agents` | Get all 3 agent wallets |
+| POST | `/wallet/create` | Create a new wallet |
+| GET | `/wallet/balance/:addr` | Get wallet balance |
+| POST | `/wallet/send` | Send USDT between wallets |
+| GET | `/wallet/all` | List all wallets |
 
 ## 🔑 Environment Variables
 
@@ -57,4 +64,4 @@ See `backend/.env.example` for all required variables.
 ## 👥 Team
 
 - **Person A**: Backend + AI/ML
-- **Person B**: Frontend + UI/UX
+- **Person B**: Frontend + WDK Blockchain

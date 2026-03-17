@@ -2,11 +2,10 @@ const express = require('express');
 const cors = require('cors');
 const config = require('./src/config');
 const { authenticate } = require('./src/middleware/auth');
+const { initAgentWallets, getAgentWallets } = require('./src/config/agentWallets');
 
 // Import route handlers
-const generateRoutes = require('./src/routes/generate');
-const autocompleteRoutes = require('./src/routes/autocomplete');
-const bugDetectionRoutes = require('./src/routes/bugDetection');
+const walletRoutes = require('./src/routes/wallet');
 
 const app = express();
 
@@ -22,7 +21,7 @@ app.use(cors({
   allowedHeaders: ['Content-Type', 'Authorization'],
 }));
 
-// Parse JSON bodies (limit: 10MB for large code files)
+// Parse JSON bodies
 app.use(express.json({ limit: '10mb' }));
 
 // ============================================================
@@ -33,17 +32,28 @@ app.use(express.json({ limit: '10mb' }));
 app.get('/health', (req, res) => {
   res.json({
     status: 'ok',
-    service: 'CodeMind AI Backend',
+    service: 'AgentPay Backend',
     version: '1.0.0',
     timestamp: new Date().toISOString(),
     environment: config.nodeEnv,
   });
 });
 
-// API v1 routes — auth required
-app.use('/api/v1/generate', authenticate, generateRoutes);
-app.use('/api/v1/autocomplete', authenticate, autocompleteRoutes);
-app.use('/api/v1/bugs', authenticate, bugDetectionRoutes);
+// Agent wallets info endpoint
+app.get('/agents', (req, res) => {
+  const wallets = getAgentWallets();
+  res.json({
+    success: true,
+    agents: {
+      manager: wallets.manager ? { name: wallets.manager.name, address: wallets.manager.address, balance: wallets.manager.balance } : null,
+      research: wallets.research ? { name: wallets.research.name, address: wallets.research.address, balance: wallets.research.balance } : null,
+      execution: wallets.execution ? { name: wallets.execution.name, address: wallets.execution.address, balance: wallets.execution.balance } : null,
+    },
+  });
+});
+
+// Wallet routes
+app.use('/wallet', authenticate, walletRoutes);
 
 // ============================================================
 //  Error Handling
@@ -76,17 +86,28 @@ app.use((err, req, res, next) => {
 //  Start Server
 // ============================================================
 
-app.listen(config.port, () => {
-  console.log(`
+async function startServer() {
+  // Create the 3 agent wallets on startup
+  await initAgentWallets();
+
+  app.listen(config.port, () => {
+    console.log(`
   ╔══════════════════════════════════════════════╗
-  ║         🧠  CodeMind AI Backend              ║
+  ║         💰  AgentPay Backend                 ║
   ║         Running on port ${config.port}                ║
   ║         Environment: ${config.nodeEnv}          ║
   ║         AI Provider: ${config.aiProvider}              ║
   ╚══════════════════════════════════════════════╝
-  `);
-  console.log(`  Health check: http://localhost:${config.port}/health`);
-  console.log(`  API base:     http://localhost:${config.port}/api/v1\n`);
+    `);
+    console.log(`  Health check:   http://localhost:${config.port}/health`);
+    console.log(`  Agent wallets:  http://localhost:${config.port}/agents`);
+    console.log(`  Wallet API:     http://localhost:${config.port}/wallet\n`);
+  });
+}
+
+startServer().catch((err) => {
+  console.error('Failed to start server:', err);
+  process.exit(1);
 });
 
 module.exports = app;
