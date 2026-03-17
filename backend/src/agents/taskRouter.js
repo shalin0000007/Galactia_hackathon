@@ -10,6 +10,8 @@ const { ResearchAgent } = require('./researchAgent');
 const { ExecutionAgent } = require('./executionAgent');
 const walletService = require('../services/walletService');
 const { recordPayment } = require('../services/paymentStore');
+const dbService = require('../services/dbService');
+const explorerService = require('../services/explorerService');
 const paymentConfig = require('../config/paymentConfig');
 const { getAgentWallets } = require('../config/agentWallets');
 
@@ -51,6 +53,7 @@ async function routeTasks(tasks) {
 
       // Attempt payment if task succeeded and wallets exist
       let paymentResult = null;
+      let explorerUrl = null;
       if (result.status === 'completed' && agentWallets.manager && workerWallet && paymentConfig.autoPayEnabled) {
         try {
           const paymentAmount = paymentConfig.getPaymentAmount(task.agent);
@@ -61,7 +64,7 @@ async function routeTasks(tasks) {
           );
           console.log(`[TaskRouter] Payment: ${paymentAmount} USDT → ${task.agent} agent | tx: ${paymentResult.txHash}`);
 
-          // Record payment in history
+          // 1) Record in-memory (Person A)
           recordPayment({
             from: agentWallets.manager.address,
             fromName: agentWallets.manager.name,
@@ -73,6 +76,19 @@ async function routeTasks(tasks) {
             agentType: task.agent,
             taskDescription: task.task,
           });
+
+          // 2) Persist to payments.json (Person B)
+          dbService.recordPayment(
+            paymentResult.txHash,      // taskId
+            workerWallet.name,         // agentName
+            paymentAmount,             // amount
+            paymentResult.txHash       // txHash
+          );
+
+          // 3) Get block explorer URL (Person B)
+          explorerUrl = explorerService.getExplorerUrl(paymentResult.txHash);
+          console.log(`[TaskRouter] Explorer: ${explorerUrl}`);
+
         } catch (payErr) {
           console.error(`[TaskRouter] Payment failed: ${payErr.message}`);
           paymentResult = { error: payErr.message };
@@ -89,6 +105,7 @@ async function routeTasks(tasks) {
           currency: 'USDT',
           status: paymentResult && !paymentResult.error ? 'paid' : 'unpaid',
           tx_hash: paymentResult?.txHash || null,
+          explorer_url: explorerUrl,
         },
         duration_ms: Date.now() - taskStartTime,
       });

@@ -8,6 +8,8 @@
 
 const express = require('express');
 const { getPayments, getPayment, getPaymentStats } = require('../services/paymentStore');
+const dbService = require('../services/dbService');
+const explorerService = require('../services/explorerService');
 
 const router = express.Router();
 
@@ -24,11 +26,20 @@ router.get('/', (req, res) => {
     if (status) filters.status = status;
     if (limit) filters.limit = parseInt(limit, 10);
 
-    const payments = getPayments(filters);
+    // In-memory payments (current session)
+    const memPayments = getPayments(filters);
+
+    // Persistent payments from DB (survives restarts — Person B)
+    const dbPayments = dbService.getPayments();
+
     res.json({
       success: true,
-      count: payments.length,
-      payments,
+      count: memPayments.length,
+      payments: memPayments,
+      persisted: {
+        count: dbPayments.length,
+        payments: dbPayments,
+      },
     });
   } catch (err) {
     console.error('[Payments] Error:', err.message);
@@ -60,13 +71,26 @@ router.get('/stats', (req, res) => {
  */
 router.get('/:id', (req, res) => {
   try {
-    const payment = getPayment(req.params.id);
+    // Check in-memory first, then DB
+    let payment = getPayment(req.params.id);
+    let source = 'memory';
+
+    if (!payment) {
+      payment = dbService.getPaymentByHash(req.params.id);
+      source = 'db';
+    }
+
     if (!payment) {
       return res.status(404).json({
         error: { code: 'NOT_FOUND', message: 'Payment not found' },
       });
     }
-    res.json({ success: true, payment });
+
+    // Add explorer URL (Person B)
+    const txHash = payment.txHash || payment.tx_hash;
+    const explorerUrl = txHash ? explorerService.getExplorerUrl(txHash) : null;
+
+    res.json({ success: true, source, payment: { ...payment, explorer_url: explorerUrl } });
   } catch (err) {
     console.error('[Payments] Error:', err.message);
     res.status(500).json({
