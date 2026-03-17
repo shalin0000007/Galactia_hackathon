@@ -5,7 +5,7 @@
  * take actions based on research results.
  */
 
-const { ChatOpenAI } = require('@langchain/openai');
+const { ChatGroq } = require('@langchain/groq');
 const { HumanMessage, SystemMessage } = require('@langchain/core/messages');
 const config = require('../config');
 
@@ -44,11 +44,11 @@ Response format:
 class ExecutionAgent {
   constructor() {
     this.name = 'Execution Agent';
-    this.model = new ChatOpenAI({
-      modelName: config.ai.execution.model,
+    this.model = new ChatGroq({
+      model: 'llama-3.3-70b-versatile',
       temperature: config.ai.execution.temperature,
       maxTokens: config.ai.execution.maxTokens,
-      openAIApiKey: config.openaiApiKey,
+      apiKey: process.env.GROQ_API_KEY,
     });
   }
 

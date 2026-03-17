@@ -8,7 +8,7 @@
  * This is Person A's default so the chain works end-to-end.
  */
 
-const { ChatOpenAI } = require('@langchain/openai');
+const { ChatGroq } = require('@langchain/groq');
 const { HumanMessage, SystemMessage } = require('@langchain/core/messages');
 const config = require('../config');
 
@@ -47,11 +47,11 @@ Response format:
 class ResearchAgent {
   constructor() {
     this.name = 'Research Agent';
-    this.model = new ChatOpenAI({
-      modelName: config.ai.research.model,
+    this.model = new ChatGroq({
+      model: 'llama-3.3-70b-versatile',
       temperature: config.ai.research.temperature,
       maxTokens: config.ai.research.maxTokens,
-      openAIApiKey: config.openaiApiKey,
+      apiKey: process.env.GROQ_API_KEY,
     });
   }
 

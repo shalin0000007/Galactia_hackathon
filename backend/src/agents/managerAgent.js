@@ -5,7 +5,7 @@
  * and assigns to Research or Execution agents.
  */
 
-const { ChatOpenAI } = require('@langchain/openai');
+const { ChatGroq } = require('@langchain/groq');
 const { HumanMessage, SystemMessage } = require('@langchain/core/messages');
 const config = require('../config');
 
@@ -39,11 +39,11 @@ Response format:
 class ManagerAgent {
   constructor() {
     this.name = 'Manager Agent';
-    this.model = new ChatOpenAI({
-      modelName: config.ai.manager.model,
+    this.model = new ChatGroq({
+      model: 'llama-3.3-70b-versatile',
       temperature: config.ai.manager.temperature,
       maxTokens: config.ai.manager.maxTokens,
-      openAIApiKey: config.openaiApiKey,
+      apiKey: process.env.GROQ_API_KEY,
     });
   }
 
