@@ -1,83 +1,67 @@
-"use client";
-import { useState } from "react";
-import CodeEditor from "@/components/Editor/Editor";
-import { FolderCode, MessageSquare, Terminal as TerminalIcon, Wallet, Play, Save } from "lucide-react";
+'use client';
+import { useState } from 'react';
+import AgentPrompt from '@/components/AgentPrompt/AgentPrompt';
+import AgentFeed from '@/components/AgentFeed/AgentFeed';
+import PaymentTable from '@/components/PaymentTable/PaymentTable';
+import WalletCards from '@/components/WalletCards/WalletCards';
 
-export default function Home() {
-  const [code, setCode] = useState("// Start coding...");
-  const [aiPrompt, setAiPrompt] = useState("");
+export default function Dashboard() {
+  const [agentResults, setAgentResults] = useState([]);
+  const [reasoning, setReasoning] = useState(null);
+  const [refreshWallets, setRefreshWallets] = useState(0);
+
+  const handleAgentResult = (result) => {
+    if (result.results) {
+      setAgentResults(result.results);
+    }
+    if (result.manager_reasoning) {
+      setReasoning(result.manager_reasoning);
+    }
+    // Trigger wallet refresh after agent run (balances change)
+    setRefreshWallets(n => n + 1);
+  };
 
   return (
-    <div className="flex h-screen w-full bg-[#1E1E2E] text-[#CDD6F4] font-sans selection:bg-[#4FC3F7]/30">
-      {/* Zone A: Sidebar */}
-      <aside className="w-[220px] h-full bg-[#252537] border-r border-zinc-800 flex flex-col">
-        <div className="p-4 border-b border-zinc-800 flex items-center gap-2">
-          <FolderCode className="text-[#4FC3F7] w-5 h-5" />
-          <span className="font-semibold text-sm">Explorer</span>
+    <div className="agp-layout">
+      {/* Nav */}
+      <nav className="agp-nav">
+        <span className="agp-logo">⚡ AgentPay</span>
+        <div className="flex items-center gap-3">
+          <span className="agp-nav-badge">
+            <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#10b981', display: 'inline-block' }} />
+            Backend live
+          </span>
+          <span style={{ fontSize: 11, color: 'var(--text-faint)' }}>localhost:3000</span>
         </div>
-        <div className="flex-1 p-2 text-xs text-zinc-400">
-          <div className="p-2 hover:bg-white/5 rounded cursor-pointer">main.py</div>
-          <div className="p-2 hover:bg-white/5 rounded cursor-pointer">utils.js</div>
+      </nav>
+
+      <main className="agp-main">
+        {/* Wallet Cards — top full width */}
+        <div style={{ marginBottom: 16 }}>
+          <WalletCards refreshTrigger={refreshWallets} />
         </div>
-      </aside>
 
-      <div className="flex-1 flex flex-col relative">
-        {/* Zone B: Top Toolbar */}
-        <header className="h-[48px] bg-[#252537] border-b border-zinc-800 flex items-center justify-between px-4">
-          <div className="flex items-center gap-4 text-xs font-medium">
-            <button className="flex items-center gap-1.5 hover:text-[#4FC3F7] transition-colors"><Save size={14} /> Save</button>
-            <button className="flex items-center gap-1.5 text-[#A8FF78] hover:opacity-80 transition-opacity"><Play size={14} /> Run</button>
+        {/* Manager reasoning (shows after run) */}
+        {reasoning && (
+          <div className="agp-reasoning" style={{ marginBottom: 16 }}>
+            🧠 Manager: "{reasoning}"
           </div>
-          <div className="flex items-center gap-4">
-            <div className="flex items-center gap-2 bg-[#1E1E2E] px-3 py-1 rounded-full border border-zinc-800">
-              <Wallet size={14} className="text-[#FFB347]" />
-              <span className="text-xs">0x1234...5678</span>
-            </div>
-          </div>
-        </header>
+        )}
 
-        <main className="flex-1 flex overflow-hidden">
-          {/* Zone C: Main Editor */}
-          <section className="flex-1 p-4 bg-[#1E1E2E]">
-            <CodeEditor code={code} onChange={(v) => setCode(v || "")} />
-          </section>
-
-          {/* Zone D: AI Prompt Panel */}
-          <aside className="w-[300px] bg-[#252537] border-l border-zinc-800 flex flex-col">
-            <div className="p-4 border-b border-zinc-800 flex items-center gap-2">
-              <MessageSquare className="text-[#4FC3F7] w-4 h-4" />
-              <span className="text-xs font-semibold">AI Assistant</span>
-            </div>
-            <div className="flex-1 p-4 overflow-y-auto space-y-4">
-               {/* Chat history would go here */}
-               <div className="text-[11px] text-zinc-500 italic text-center">Ask me to generate code or fix bugs</div>
-            </div>
-            <div className="p-4 border-t border-zinc-800">
-              <textarea 
-                value={aiPrompt}
-                onChange={(e) => setAiPrompt(e.target.value)}
-                placeholder="Ask AI..."
-                className="w-full h-24 bg-[#1E1E2E] border border-zinc-700 rounded-md p-2 text-xs focus:ring-1 focus:ring-[#4FC3F7] outline-none"
-              />
-              <button className="w-full mt-2 bg-[#4FC3F7] text-[#1E1E2E] font-bold py-1.5 rounded-md text-xs hover:bg-[#4FC3F7]/90 transition-all">
-                Send Request
-              </button>
-            </div>
-          </aside>
-        </main>
-
-        {/* Zone E: Bottom Terminal */}
-        <section className="h-[200px] bg-[#1E1E2E] border-t border-zinc-800 flex flex-col">
-          <div className="px-4 py-2 border-b border-zinc-800 flex items-center gap-2 bg-[#252537]">
-            <TerminalIcon className="w-3.5 h-3.5" />
-            <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-500">Terminal</span>
+        {/* 2-column grid */}
+        <div className="agp-grid">
+          {/* Left: Prompt + Feed */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+            <AgentPrompt onResult={handleAgentResult} />
+            <AgentFeed results={agentResults} />
           </div>
-          <div className="flex-1 p-4 font-mono text-xs text-[#A8FF78]">
-            <p>$ node main.js</p>
-            <p className="text-[#CDD6F4]">Server running on port 3000...</p>
+
+          {/* Right: Payment Table */}
+          <div style={{ minHeight: 400 }}>
+            <PaymentTable />
           </div>
-        </section>
-      </div>
+        </div>
+      </main>
     </div>
   );
 }
