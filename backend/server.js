@@ -1,5 +1,6 @@
 const express = require('express');
 const cors = require('cors');
+const morgan = require('morgan');
 const config = require('./src/config');
 const { authenticate } = require('./src/middleware/auth');
 const { initAgentWallets, getAgentWallets } = require('./src/config/agentWallets');
@@ -7,13 +8,21 @@ const { initAgentWallets, getAgentWallets } = require('./src/config/agentWallets
 // Import route handlers
 const walletRoutes = require('./src/routes/wallet');
 
+// Person B's services (Coinbase SDK wallet + AI)
+let personBWalletService, personBAiService;
+try {
+  personBWalletService = require('./walletService');
+  personBAiService = require('./src/services/aiService');
+} catch (e) {
+  // Person B's files may not exist yet — that's ok
+}
+
 const app = express();
 
 // ============================================================
 //  Middleware
 // ============================================================
 
-// CORS — allow frontend origin
 app.use(cors({
   origin: config.frontendUrl,
   credentials: true,
@@ -21,14 +30,14 @@ app.use(cors({
   allowedHeaders: ['Content-Type', 'Authorization'],
 }));
 
-// Parse JSON bodies
 app.use(express.json({ limit: '10mb' }));
+app.use(morgan('dev'));
 
 // ============================================================
 //  Routes
 // ============================================================
 
-// Health check — no auth required
+// Health check
 app.get('/health', (req, res) => {
   res.json({
     status: 'ok',
@@ -52,14 +61,46 @@ app.get('/agents', (req, res) => {
   });
 });
 
-// Wallet routes
+// Wallet routes (Person A's structured routes)
 app.use('/wallet', authenticate, walletRoutes);
+
+// ----------------------------------------
+// AI ROUTES (Person B)
+// ----------------------------------------
+if (personBAiService) {
+  app.post('/api/v1/generate', async (req, res) => {
+    const { prompt, fileContent, language } = req.body;
+    if (!prompt || !language) {
+      return res.status(400).json({ status: 'error', message: 'Missing prompt or language' });
+    }
+    try {
+      const result = await personBAiService.generateCode({ prompt, fileContent, language });
+      res.json({ status: 'success', data: result });
+    } catch (error) {
+      console.error('AI Error:', error.message);
+      res.status(500).json({ status: 'error', message: error.message });
+    }
+  });
+
+  app.post('/api/v1/autocomplete', async (req, res) => {
+    const { partialCode, language } = req.body;
+    if (!partialCode || !language) {
+      return res.status(400).json({ status: 'error', message: 'Missing partialCode or language' });
+    }
+    try {
+      const result = await personBAiService.getAutoComplete({ partialCode, language });
+      res.json({ status: 'success', data: result });
+    } catch (error) {
+      console.error('AI Error:', error.message);
+      res.status(500).json({ status: 'error', message: error.message });
+    }
+  });
+}
 
 // ============================================================
 //  Error Handling
 // ============================================================
 
-// 404 handler
 app.use((req, res) => {
   res.status(404).json({
     error: {
@@ -70,7 +111,6 @@ app.use((req, res) => {
   });
 });
 
-// Global error handler
 app.use((err, req, res, next) => {
   console.error('[Server Error]', err);
   res.status(500).json({
@@ -87,7 +127,6 @@ app.use((err, req, res, next) => {
 // ============================================================
 
 async function startServer() {
-  // Create the 3 agent wallets on startup
   await initAgentWallets();
 
   app.listen(config.port, () => {

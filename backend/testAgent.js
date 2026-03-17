@@ -1,18 +1,24 @@
 /**
- * testAgent.js — Day 1 Task: Test LangChain + OpenAI integration
+ * testAgent.js — Test LangChain + OpenAI integration
  * 
  * Run: node testAgent.js
  * Goal: Send a prompt to OpenAI via LangChain, log the response.
  */
 
-require('dotenv').config();
+const path = require('path');
+require('dotenv').config({ path: path.resolve(__dirname, '.env') });
+// Fallback: try parent dir if key not found
+if (!process.env.OPENAI_API_KEY) {
+  require('dotenv').config({ path: path.resolve(__dirname, '..', '.env') });
+}
+
 const { ChatOpenAI } = require('@langchain/openai');
 const { HumanMessage, SystemMessage } = require('@langchain/core/messages');
 
-async function testOpenAI() {
+async function testAgent() {
   console.log('\n🧠 Testing LangChain + OpenAI connection...\n');
+  console.log('API Key found:', process.env.OPENAI_API_KEY ? 'Yes (starts with ' + process.env.OPENAI_API_KEY.substring(0, 10) + '...)' : 'No');
 
-  // Initialize the model
   const model = new ChatOpenAI({
     modelName: 'gpt-4o-mini',
     temperature: 0.7,
@@ -21,15 +27,14 @@ async function testOpenAI() {
 
   try {
     // Test 1: Simple prompt
-    console.log('--- Test 1: Simple Prompt ---');
+    console.log('\n--- Test 1: Simple Prompt ---');
     const response1 = await model.invoke([
       new SystemMessage('You are a helpful AI assistant for a payment system called AgentPay.'),
       new HumanMessage('What is AgentPay and how can AI agents make payments to each other?'),
     ]);
     console.log('Response:', response1.content);
-    console.log('Tokens used:', response1.usage_metadata);
 
-    // Test 2: Task assignment prompt (simulating Manager Agent)
+    // Test 2: Manager Agent task assignment
     console.log('\n--- Test 2: Manager Agent Task Assignment ---');
     const response2 = await model.invoke([
       new SystemMessage(
@@ -43,12 +48,16 @@ async function testOpenAI() {
 
     console.log('\n✅ LangChain + OpenAI connection verified successfully!\n');
   } catch (error) {
-    console.error('\n❌ Error:', error.message);
-    if (error.message.includes('API key')) {
+    if (error.message.includes('401')) {
+      console.error('\n❌ Invalid API key (401). Please check your .env file.');
+    } else {
+      console.error('\n❌ Error:', error.message);
+    }
+    if (error.message.includes('API key') || error.message.includes('401')) {
       console.error('💡 Make sure OPENAI_API_KEY is set in your .env file');
     }
     process.exit(1);
   }
 }
 
-testOpenAI();
+testAgent();
