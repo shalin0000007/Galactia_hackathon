@@ -1,6 +1,9 @@
 const fs = require('fs');
 const path = require('path');
+require('dotenv').config({ path: path.resolve(__dirname, '.env') });
 const { createWallet } = require('./walletService');
+
+const delay = ms => new Promise(res => setTimeout(res, ms));
 
 async function setup() {
   console.log("Setting up Agent Wallets...");
@@ -11,6 +14,8 @@ async function setup() {
   for (const role of roles) {
     const result = await createWallet(role);
     config[role] = result.address;
+    console.log(`Waiting 2s after creating ${role}...`);
+    await delay(2000); // 2 second delay
   }
   
   const configContent = `// Agent Wallet Configuration

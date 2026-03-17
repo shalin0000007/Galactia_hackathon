@@ -36,6 +36,7 @@ async function createWallet(name = 'default') {
     return { address, name };
   } catch (error) {
     console.error("Error creating wallet:", error.message);
+    console.error("Full error:", JSON.stringify(error, Object.getOwnPropertyNames(error), 2));
     // Since we may not have valid Coinbase API keys right away, return a mock response for API tests
     const mockAddress = `0xMockAddress${Date.now()}`;
     console.log(`[Mock] Creating mock wallet '${name}' with address: ${mockAddress}`);
