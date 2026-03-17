@@ -9,6 +9,8 @@
 const { ResearchAgent } = require('./researchAgent');
 const { ExecutionAgent } = require('./executionAgent');
 const walletService = require('../services/walletService');
+const { recordPayment } = require('../services/paymentStore');
+const paymentConfig = require('../config/paymentConfig');
 const { getAgentWallets } = require('../config/agentWallets');
 
 // Singleton agent instances
@@ -49,14 +51,28 @@ async function routeTasks(tasks) {
 
       // Attempt payment if task succeeded and wallets exist
       let paymentResult = null;
-      if (result.status === 'completed' && agentWallets.manager && workerWallet) {
+      if (result.status === 'completed' && agentWallets.manager && workerWallet && paymentConfig.autoPayEnabled) {
         try {
+          const paymentAmount = paymentConfig.getPaymentAmount(task.agent);
           paymentResult = await walletService.sendUSDT(
             agentWallets.manager.address,
             workerWallet.address,
-            task.payment
+            paymentAmount
           );
-          console.log(`[TaskRouter] Payment: ${task.payment} USDT → ${task.agent} agent | tx: ${paymentResult.txHash}`);
+          console.log(`[TaskRouter] Payment: ${paymentAmount} USDT → ${task.agent} agent | tx: ${paymentResult.txHash}`);
+
+          // Record payment in history
+          recordPayment({
+            from: agentWallets.manager.address,
+            fromName: agentWallets.manager.name,
+            to: workerWallet.address,
+            toName: workerWallet.name,
+            amount: paymentAmount,
+            currency: 'USDT',
+            txHash: paymentResult.txHash,
+            agentType: task.agent,
+            taskDescription: task.task,
+          });
         } catch (payErr) {
           console.error(`[TaskRouter] Payment failed: ${payErr.message}`);
           paymentResult = { error: payErr.message };

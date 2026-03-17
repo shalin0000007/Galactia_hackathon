@@ -8,6 +8,7 @@ const { initAgentWallets, getAgentWallets } = require('./src/config/agentWallets
 // Import route handlers
 const walletRoutes = require('./src/routes/wallet');
 const agentRoutes = require('./src/routes/agent');
+const paymentsRoutes = require('./src/routes/payments');
 
 // Person B's services (Coinbase SDK wallet + AI)
 let personBWalletService, personBAiService;
@@ -67,6 +68,9 @@ app.use('/wallet', authenticate, walletRoutes);
 
 // Agent routes
 app.use('/agent', authenticate, agentRoutes);
+
+// Payment history routes
+app.use('/payments', authenticate, paymentsRoutes);
 
 // ----------------------------------------
 // AI ROUTES (Person B)
