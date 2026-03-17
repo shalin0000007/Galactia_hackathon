@@ -31,22 +31,22 @@ const config = {
     standardRequestsPerMinute: 60,
   },
 
-  // AI Model Settings
+  // AI Model Settings for Agents
   ai: {
-    generation: {
+    manager: {
       model: 'gpt-4o-mini',
-      temperature: 0.6,
+      temperature: 0.7,
+      maxTokens: 1000,
+    },
+    research: {
+      model: 'gpt-4o-mini',
+      temperature: 0.4,
       maxTokens: 800,
     },
-    autocomplete: {
-      model: 'gpt-4o-mini',
-      temperature: 0.3,
-      maxTokens: 400,
-    },
-    bugDetection: {
+    execution: {
       model: 'gpt-4o-mini',
       temperature: 0.2,
-      maxTokens: 600,
+      maxTokens: 500,
     },
   },
 };

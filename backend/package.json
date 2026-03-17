@@ -1,7 +1,7 @@
 {
-  "name": "codemind-ai-backend",
+  "name": "agentpay-backend",
   "version": "1.0.0",
-  "description": "CodeMind AI - AI-Powered Code Editor Backend",
+  "description": "AgentPay - AI-Powered Autonomous Agent Payment System",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
@@ -10,11 +10,12 @@
   },
   "keywords": [
     "ai",
-    "code-editor",
-    "openai",
+    "agent",
+    "payment",
+    "wdk",
     "express"
   ],
-  "author": "CodeMind AI Team",
+  "author": "AgentPay Team",
   "license": "MIT",
   "dependencies": {
     "@langchain/core": "^1.1.33",
