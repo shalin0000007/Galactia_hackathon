@@ -4,6 +4,7 @@ const morgan = require('morgan');
 require('dotenv').config();
 
 const { createWallet, getBalance, sendUSDT, wallets } = require('./walletService');
+const aiService = require('./src/services/aiService');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -17,6 +18,44 @@ app.use(morgan('dev'));
 // ----------------------------------------
 app.get('/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
+});
+
+// ----------------------------------------
+// AI ROUTES
+// ----------------------------------------
+
+// Generate code based on a prompt
+app.post('/api/v1/generate', async (req, res) => {
+  const { prompt, fileContent, language } = req.body;
+  
+  if (!prompt || !language) {
+    return res.status(400).json({ status: 'error', message: 'Missing prompt or language' });
+  }
+
+  try {
+    const result = await aiService.generateCode({ prompt, fileContent, language });
+    res.json({ status: 'success', data: result });
+  } catch (error) {
+    console.error('AI Error:', error.message);
+    res.status(500).json({ status: 'error', message: error.message });
+  }
+});
+
+// Autocomplete code
+app.post('/api/v1/autocomplete', async (req, res) => {
+  const { partialCode, language } = req.body;
+  
+  if (!partialCode || !language) {
+    return res.status(400).json({ status: 'error', message: 'Missing partialCode or language' });
+  }
+
+  try {
+    const result = await aiService.getAutoComplete({ partialCode, language });
+    res.json({ status: 'success', data: result });
+  } catch (error) {
+    console.error('AI Error:', error.message);
+    res.status(500).json({ status: 'error', message: error.message });
+  }
 });
 
 // ----------------------------------------
