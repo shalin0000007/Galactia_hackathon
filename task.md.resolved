@@ -1,0 +1,23 @@
+# CodeMind AI — Day 0 & Day 1 Planning
+
+## Day 0 — Pre-Hackathon Setup (2–3 Hours, Evening)
+- [ ] Read & lock MVP scope (5 core features only)
+- [ ] Set up GitHub repo & project folder structure (`/backend`, `/frontend`, `/agents`)
+- [ ] Verify dev environment: Node.js, npm, VS Code, API keys
+- [ ] Install dependencies & test OpenAI/Claude API connectivity
+- [ ] Write product backlog & assign Day 1 tasks
+- [ ] Create `.env` file with all required environment variables
+
+## Day 1 — Project Setup & Core Foundation (9:00 AM – 5:00 PM)
+- [ ] Morning kickoff: review Day 1 tasks together
+- [ ] **Person A**: Backend scaffold — Express server on port 3000, `GET /health`
+- [ ] **Person B**: Frontend scaffold — Next.js + Monaco Editor setup
+- [ ] **Person A**: Install AI SDK (LangChain/OpenAI) + test API call
+- [ ] **Person B**: Monaco Editor integration — syntax highlighting, basic layout
+- [ ] Mid-morning sync: share progress + unblock
+- [ ] **Person A**: Create API routes — `/api/v1/generate`, `/api/v1/autocomplete`
+- [ ] **Person B**: Build editor UI zones (sidebar, toolbar, editor, terminal panel)
+- [ ] **Person A**: Implement PromptBuilder class + system prompts
+- [ ] **Person B**: Connect AI prompt panel to backend API
+- [ ] Integration test: frontend → backend → AI → response displayed
+- [ ] Fix bugs + Git commit Day 1 progress
