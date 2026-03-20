@@ -39,7 +39,7 @@ graph TD
     subgraph "WDK Safety Layer"
         QualityGate -->|Approved| Guard["WalletGuard<br/>Permissions · Whitelisting · Caps"]
         Guard -->|Validated| WDK["WDK Wallet Service<br/>@tetherto/wdk-wallet-evm"]
-        WDK -->|"ERC20 transfer()"| Sonic["Sonic Network<br/>Chain ID 146"]
+        WDK -->|"ERC20 transfer()"| Sonic["Sonic Blaze Testnet<br/>Chain ID 57054"]
     end
 
     subgraph "Observability"
@@ -68,8 +68,8 @@ graph TD
 |---|---|
 | **Real WDK wallets** | 3 agent wallets derived from BIP-39 seed via `@tetherto/wdk-wallet-evm` |
 | **Deterministic derivation** | BIP-44 indices (0=Manager, 1=Research, 2=Execution) |
-| **On-chain settlement** | Every payment is a real ERC20 USDT transfer on Sonic |
-| **Verifiable transactions** | Every tx hash links to [sonicscan.org](https://sonicscan.org) |
+| **On-chain settlement** | Every payment is a real ERC20 USDT transfer on Sonic Blaze Testnet |
+| **Verifiable transactions** | Every tx hash links to [testnet.sonicscan.org](https://testnet.sonicscan.org) |
 
 ### Safety & Permissions
 | Feature | Description |
@@ -79,6 +79,13 @@ graph TD
 | **Per-transaction caps** | Max 2 USDT per single transfer |
 | **Rate limiting** | Max 10 transfers per hour per wallet |
 | **Budget constraints** | Per-run (3 USDT) and daily (20 USDT) spending limits |
+
+### DeFi Capabilities
+| Feature | Description |
+|---|---|
+| **Aave V3 Lending** | Agents can check live rates across multiple chains |
+| **Cross-chain Bridging** | Agents can check supported chains and estimate bridge fees |
+| **Yield Tracking** | Agents can fetch and compare DeFi yields |
 
 ### Observability
 | Feature | Description |
@@ -92,7 +99,7 @@ graph TD
 ## 🛠 Tech Stack
 
 - **Wallets**: Tether WDK (`@tetherto/wdk-wallet-evm`) — BIP-44 deterministic derivation
-- **Network**: Sonic (EVM Layer-1, Chain ID 146, USDT at `0x6047828dc181963ba44974801ff68e538da5eaf9`)
+- **Network**: Sonic Blaze Testnet (EVM Layer-1, Chain ID 57054, Mock USDT deployed automatically by Manager)
 - **AI/Agent Framework**: LangChain (Groq / OpenAI) — equivalent to OpenClaw for agent reasoning
 - **Backend**: Node.js, Express, Joi validation, rate limiting
 - **Frontend**: Next.js 16, Tailwind CSS, glassmorphism dashboard
@@ -104,7 +111,7 @@ graph TD
 ### Prerequisites
 - Node.js v18+
 - A BIP-39 seed phrase (12 words)
-- S tokens + USDT on Sonic mainnet (for the Manager wallet)
+- S tokens on Sonic Blaze Testnet (for the Manager wallet; Mock USDT is minted automatically)
 
 ### Backend Setup
 ```bash
@@ -151,6 +158,11 @@ Open **http://localhost:3001** to access the dashboard.
 | `GET` | `/wallet/balance/:addr` | Yes | On-chain USDT balance |
 | `POST` | `/wallet/send` | Yes | Send USDT on Sonic |
 | `GET` | `/payments` | No | Payment history with explorer links |
+| `GET` | `/defi/aave` | No | Aave V3 lending rates |
+| `GET` | `/defi/aave/all` | No | Multi-chain Aave V3 rates |
+| `GET` | `/defi/bridge/chains` | No | Supported chains for bridging |
+| `GET` | `/defi/bridge/estimate` | No | Estimate cross-chain transfer fee |
+| `GET` | `/defi/bridge/status` | No | Check bridge status |
 
 ---
 
@@ -209,7 +221,6 @@ Task costs:
 - Wallet balances require manual funding (S tokens for gas + USDT)
 - Quality evaluation adds ~2-3 seconds per task (additional LLM call)
 - No persistent state across server restarts (in-memory audit log)
-- No DeFi protocol interactions (focused on agent wallet track)
 
 ---
 
