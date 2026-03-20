@@ -1,0 +1,47 @@
+{
+  "name": "agentpay-backend",
+  "version": "1.0.0",
+  "description": "AgentPay - AI-Powered Autonomous Agent Payment System",
+  "main": "server.js",
+  "type": "commonjs",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon --ignore payments.json server.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "ai",
+    "agent",
+    "payment",
+    "wdk",
+    "express"
+  ],
+  "author": "AgentPay Team",
+  "license": "MIT",
+  "dependencies": {
+    "@langchain/core": "^1.1.34",
+    "@langchain/google-genai": "^2.1.26",
+    "@langchain/groq": "^1.1.5",
+    "@langchain/openai": "^1.3.0",
+    "@tetherto/wdk-wallet-evm": "^1.0.0-beta.8",
+    "axios": "^1.13.6",
+    "cors": "^2.8.6",
+    "dotenv": "^17.3.1",
+    "ethers": "^6.16.0",
+    "express": "^5.2.1",
+    "express-rate-limit": "^7.1.4",
+    "joi": "^17.11.0",
+    "jsonwebtoken": "^9.0.2",
+    "langchain": "^1.2.35",
+    "morgan": "^1.10.1",
+    "openai": "^6.31.0",
+    "solc": "^0.8.34",
+    "swagger-jsdoc": "^6.2.8",
+    "swagger-ui-express": "^5.0.1",
+    "uuid": "^9.0.0",
+    "zod": "^4.3.6"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.2"
+  }
+}

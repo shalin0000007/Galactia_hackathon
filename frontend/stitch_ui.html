@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>AgentPay | Autonomous Financial Orchestrator</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;family=Inter:wght@300;400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "inverse-surface": "#dae2fd",
+              "outline": "#988d9f",
+              "surface-container-high": "#222a3d",
+              "on-tertiary-fixed": "#001a42",
+              "surface-dim": "#0b1326",
+              "surface-bright": "#31394d",
+              "surface-container-highest": "#2d3449",
+              "on-primary-container": "#400071",
+              "on-secondary-container": "#00424e",
+              "secondary": "#4cd7f6",
+              "surface-tint": "#ddb7ff",
+              "secondary-fixed": "#acedff",
+              "on-surface": "#dae2fd",
+              "on-tertiary-fixed-variant": "#004395",
+              "primary-fixed-dim": "#ddb7ff",
+              "on-primary-fixed-variant": "#6900b3",
+              "background": "#0b1326",
+              "surface-variant": "#2d3449",
+              "tertiary-container": "#4d8eff",
+              "on-primary": "#490080",
+              "on-secondary-fixed-variant": "#004e5c",
+              "error-container": "#93000a",
+              "on-tertiary": "#002e6a",
+              "error": "#ffb4ab",
+              "on-error-container": "#ffdad6",
+              "primary-container": "#b76dff",
+              "surface-container-lowest": "#060e20",
+              "on-secondary": "#003640",
+              "surface-container": "#171f33",
+              "outline-variant": "#4d4354",
+              "on-primary-fixed": "#2c0051",
+              "primary": "#ddb7ff",
+              "inverse-on-surface": "#283044",
+              "on-tertiary-container": "#00285d",
+              "on-error": "#690005",
+              "surface-container-low": "#131b2e",
+              "tertiary": "#adc6ff",
+              "tertiary-fixed-dim": "#adc6ff",
+              "tertiary-fixed": "#d8e2ff",
+              "primary-fixed": "#f0dbff",
+              "inverse-primary": "#842bd2",
+              "surface": "#0b1326",
+              "secondary-fixed-dim": "#4cd7f6",
+              "on-surface-variant": "#cfc2d6",
+              "on-secondary-fixed": "#001f26",
+              "secondary-container": "#03b5d3",
+              "on-background": "#dae2fd"
+            },
+            fontFamily: {
+              "headline": ["Space Grotesk"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+          },
+        },
+      }
+    </script>
+<style>
+      .material-symbols-outlined {
+        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      }
+      .glass-card {
+        background: rgba(23, 31, 51, 0.7);
+        backdrop-filter: blur(20px);
+        border: 1px solid rgba(77, 67, 84, 0.2);
+      }
+      .glow-primary {
+        box-shadow: 0 0 40px rgba(221, 183, 255, 0.06);
+      }
+      .pulse-ring {
+        position: relative;
+      }
+      .pulse-ring::after {
+        content: '';
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        border: 2px solid currentColor;
+        animation: pulse 2s infinite;
+      }
+      @keyframes pulse {
+        0% { transform: scale(1); opacity: 0.5; }
+        100% { transform: scale(2); opacity: 0; }
+      }
+      .energy-gradient {
+        background: linear-gradient(135deg, #ddb7ff 0%, #b76dff 100%);
+      }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body selection:bg-primary/30 min-h-screen flex">
+<!-- SideNavBar -->
+<aside class="h-screen w-64 fixed left-0 top-0 z-40 bg-[#131b2e] flex flex-col py-8 px-4 border-r border-purple-500/10">
+<div class="mb-10 px-2">
+<h1 class="text-lg font-headline text-[#4cd7f6] tracking-tighter">Orchestrator</h1>
+<p class="text-[10px] uppercase tracking-[0.2em] text-slate-500 mt-1">v1.0.4-Alpha</p>
+</div>
+<nav class="flex-1 space-y-2">
+<!-- Active Tab: Dashboard -->
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-[#ddb7ff] border-r-2 border-[#ddb7ff] bg-purple-500/5 transition-all duration-300" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="font-label text-xs font-medium uppercase tracking-[0.05em]">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-slate-500 hover:bg-white/5 hover:text-slate-200 transition-all duration-300" href="#">
+<span class="material-symbols-outlined" data-icon="smart_toy">smart_toy</span>
+<span class="font-label text-xs font-medium uppercase tracking-[0.05em]">Agents</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-slate-500 hover:bg-white/5 hover:text-slate-200 transition-all duration-300" href="#">
+<span class="material-symbols-outlined" data-icon="receipt_long">receipt_long</span>
+<span class="font-label text-xs font-medium uppercase tracking-[0.05em]">Transactions</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-slate-500 hover:bg-white/5 hover:text-slate-200 transition-all duration-300" href="#">
+<span class="material-symbols-outlined" data-icon="security_update_good">security_update_good</span>
+<span class="font-label text-xs font-medium uppercase tracking-[0.05em]">Safety Logs</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-slate-500 hover:bg-white/5 hover:text-slate-200 transition-all duration-300" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span class="font-label text-xs font-medium uppercase tracking-[0.05em]">Settings</span>
+</a>
+</nav>
+<div class="mt-auto px-2">
+<button class="w-full py-3 px-4 energy-gradient text-on-primary-container font-headline font-bold text-sm rounded-xl shadow-[0_0_20px_rgba(168,85,247,0.3)] hover:scale-[1.02] transition-transform">
+                Deploy Agent
+            </button>
+</div>
+<div class="bg-gradient-to-r from-transparent via-purple-500/10 to-transparent w-[1px] h-full absolute right-0 top-0"></div>
+</aside>
+<div class="flex-1 flex flex-col ml-64 min-h-screen">
+<!-- TopAppBar -->
+<header class="bg-surface/80 backdrop-blur-xl border-b border-purple-500/10 sticky top-0 z-50 flex justify-between items-center w-full px-8 py-4">
+<div class="flex items-center gap-8">
+<span class="text-xl font-bold tracking-tighter text-[#ddb7ff] font-headline">AgentPay</span>
+<nav class="hidden md:flex gap-6 items-center">
+<a class="text-[#4cd7f6] font-medium font-headline tracking-tight text-sm" href="#">Sonic Mainnet</a>
+</nav>
+</div>
+<div class="flex items-center gap-4">
+<button class="text-slate-400 hover:text-[#ddb7ff] transition-colors p-2">
+<span class="material-symbols-outlined" data-icon="sensors">sensors</span>
+</button>
+<div class="w-8 h-8 rounded-full overflow-hidden border border-primary/20">
+<img alt="User Agent Profile" data-alt="Cybernetic user profile avatar placeholder" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDvWZTyjiu5hyywWJwCnX5yx1z10wzEQ-TucUR5pwQ6v8jJzeO04iMsC2O6wP5k-Z-HOIRW3ID0_q0YtOrCL5STXpAIj1SuRAVzQQA1oeebcBBbYA7KutKRG7_Ywlf-MQNm7xGlvnhHvw7x6U7Ld7uyga4W6fHafDRIXcl0QoEN44vXgjDDVUM3hXKOLyzycy3B9G5TnDu2Nzu5H-HISbOE4-5Ao-kht-6ruit6m-0Kw58beyoxBJp6snXsCriDAR8JQ-MV13MWFYlA"/>
+</div>
+</div>
+</header>
+<!-- Main Content -->
+<main class="p-8 space-y-12 max-w-7xl mx-auto w-full">
+<!-- Hero Dashboard: Budget & Wallet Status -->
+<section class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+<!-- Budget Card -->
+<div class="glass-card p-8 rounded-xl flex flex-col justify-between col-span-1 lg:col-span-1 glow-primary">
+<div class="space-y-1">
+<label class="font-label text-[10px] uppercase tracking-widest text-secondary">Daily Limit</label>
+<div class="flex items-baseline gap-2">
+<span class="text-5xl font-headline font-bold text-on-surface">20.00</span>
+<span class="text-xl font-headline text-slate-500">USDT</span>
+</div>
+</div>
+<div class="mt-8 space-y-4">
+<div class="w-full bg-surface-container-highest h-1.5 rounded-full overflow-hidden">
+<div class="h-full bg-secondary w-2/3 shadow-[0_0_10px_#4cd7f6]"></div>
+</div>
+<div class="flex justify-between font-label text-[10px] text-slate-400">
+<span>USED: 13.40 USDT</span>
+<span>REMAINING: 6.60 USDT</span>
+</div>
+</div>
+</div>
+<!-- Agent Wallets Bento -->
+<div class="col-span-1 lg:col-span-2 grid grid-cols-1 md:grid-cols-3 gap-4">
+<div class="glass-card p-6 rounded-xl border-l-2 border-secondary/40">
+<div class="flex justify-between items-start mb-4">
+<span class="material-symbols-outlined text-secondary" data-icon="account_balance_wallet">account_balance_wallet</span>
+<span class="text-[10px] bg-secondary/10 text-secondary px-2 py-0.5 rounded uppercase tracking-tighter">Sonic-01</span>
+</div>
+<p class="font-label text-[10px] text-slate-500 mb-1">Manager Wallet</p>
+<p class="text-2xl font-headline font-bold">1,240.50</p>
+</div>
+<div class="glass-card p-6 rounded-xl border-l-2 border-primary/40">
+<div class="flex justify-between items-start mb-4">
+<span class="material-symbols-outlined text-primary" data-icon="search">search</span>
+<span class="text-[10px] bg-primary/10 text-primary px-2 py-0.5 rounded uppercase tracking-tighter">Sonic-02</span>
+</div>
+<p class="font-label text-[10px] text-slate-500 mb-1">Researcher Wallet</p>
+<p class="text-2xl font-headline font-bold">85.20</p>
+</div>
+<div class="glass-card p-6 rounded-xl border-l-2 border-tertiary/40">
+<div class="flex justify-between items-start mb-4">
+<span class="material-symbols-outlined text-tertiary" data-icon="bolt">bolt</span>
+<span class="text-[10px] bg-tertiary/10 text-tertiary px-2 py-0.5 rounded uppercase tracking-tighter">Sonic-03</span>
+</div>
+<p class="font-label text-[10px] text-slate-500 mb-1">Execution Wallet</p>
+<p class="text-2xl font-headline font-bold">412.15</p>
+</div>
+</div>
+</section>
+<!-- Agent Execution Flow -->
+<section class="space-y-6">
+<div class="flex justify-between items-end">
+<div>
+<h2 class="text-2xl font-headline font-bold tracking-tight">Active Workflow</h2>
+<p class="text-slate-500 text-sm">Real-time autonomous task orchestration</p>
+</div>
+<div class="flex items-center gap-2 text-secondary text-xs uppercase tracking-widest font-label">
+<span class="w-2 h-2 rounded-full bg-secondary pulse-ring"></span>
+                        Orchestrating
+                    </div>
+</div>
+<div class="relative flex flex-col md:flex-row items-center justify-between gap-8 p-12 glass-card rounded-2xl overflow-hidden">
+<!-- Background Glow Decoration -->
+<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-px bg-gradient-to-r from-transparent via-outline-variant/30 to-transparent"></div>
+<!-- Manager Agent -->
+<div class="relative z-10 flex flex-col items-center space-y-4">
+<div class="w-20 h-20 rounded-2xl bg-surface-container-highest border border-primary/30 flex items-center justify-center glow-primary">
+<span class="material-symbols-outlined text-primary text-4xl" data-icon="psychology">psychology</span>
+</div>
+<div class="text-center">
+<h3 class="font-headline font-bold">Manager Agent</h3>
+<p class="text-[10px] uppercase text-slate-500 tracking-widest">Root Orchestrator</p>
+</div>
+</div>
+<!-- Flow Line -->
+<div class="hidden md:block flex-1 h-px bg-gradient-to-r from-primary/40 via-secondary/40 to-tertiary/40 relative">
+<div class="absolute -top-1 left-1/2 -translate-x-1/2 text-[10px] text-slate-500 bg-background px-2 font-label">DELEGATING</div>
+</div>
+<!-- Sub Agents -->
+<div class="flex gap-12">
+<div class="relative z-10 flex flex-col items-center space-y-4">
+<div class="w-16 h-16 rounded-2xl bg-surface-container-highest border border-secondary/30 flex items-center justify-center">
+<span class="material-symbols-outlined text-secondary text-3xl" data-icon="travel_explore">travel_explore</span>
+</div>
+<div class="text-center">
+<h3 class="font-headline text-sm font-bold">Researcher</h3>
+<p class="text-[9px] uppercase text-slate-500 tracking-widest">Scanning Markets</p>
+</div>
+</div>
+<div class="relative z-10 flex flex-col items-center space-y-4">
+<div class="w-16 h-16 rounded-2xl bg-surface-container-highest border border-tertiary/30 flex items-center justify-center">
+<span class="material-symbols-outlined text-tertiary text-3xl" data-icon="account_tree">account_tree</span>
+</div>
+<div class="text-center">
+<h3 class="font-headline text-sm font-bold">Execution</h3>
+<p class="text-[9px] uppercase text-slate-500 tracking-widest">Applying Logic</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Middle Section: Safety & Verification -->
+<section class="grid grid-cols-1 md:grid-cols-2 gap-8">
+<!-- WalletGuard -->
+<div class="space-y-4">
+<h3 class="font-label text-xs uppercase tracking-[0.2em] text-slate-500">WalletGuard Safety Protocol</h3>
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+<div class="glass-card p-5 rounded-xl flex items-center gap-4">
+<div class="w-10 h-10 rounded-full bg-secondary/10 flex items-center justify-center text-secondary">
+<span class="material-symbols-outlined" data-icon="verified_user">verified_user</span>
+</div>
+<div>
+<p class="text-xs font-bold font-headline">Role permitted</p>
+<p class="text-[10px] text-slate-400">Policy: Multi-Sig v2</p>
+</div>
+</div>
+<div class="glass-card p-5 rounded-xl flex items-center gap-4">
+<div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined" data-icon="trending_down">trending_down</span>
+</div>
+<div>
+<p class="text-xs font-bold font-headline">Under cap</p>
+<p class="text-[10px] text-slate-400">Current: 67% Used</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Payment Status Visualization -->
+<div class="space-y-4">
+<h3 class="font-label text-xs uppercase tracking-[0.2em] text-slate-500">Active Pipeline</h3>
+<div class="flex flex-wrap gap-3">
+<span class="px-4 py-2 rounded-full border border-secondary/30 bg-secondary/10 text-secondary text-[10px] font-bold uppercase tracking-widest flex items-center gap-2">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary pulse-ring"></span>
+                            Verified
+                        </span>
+<span class="px-4 py-2 rounded-full border border-primary/30 bg-primary/10 text-primary text-[10px] font-bold uppercase tracking-widest flex items-center gap-2">
+<span class="w-1.5 h-1.5 rounded-full bg-primary"></span>
+                            Safe
+                        </span>
+<span class="px-4 py-2 rounded-full border border-outline-variant bg-surface-container text-slate-400 text-[10px] font-bold uppercase tracking-widest flex items-center gap-2">
+<span class="w-1.5 h-1.5 rounded-full bg-slate-500"></span>
+                            Processing
+                        </span>
+</div>
+</div>
+</section>
+<!-- Immutable Audit Log -->
+<section class="space-y-6">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-slate-500" data-icon="history_edu">history_edu</span>
+<h3 class="text-xl font-headline font-bold">Immutable Audit Log</h3>
+</div>
+<div class="glass-card rounded-2xl overflow-hidden">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="border-b border-outline-variant/10 font-label text-[10px] uppercase tracking-widest text-slate-500 bg-surface-container-low/50">
+<th class="px-6 py-4 font-medium">Agent Name</th>
+<th class="px-6 py-4 font-medium">Action</th>
+<th class="px-6 py-4 font-medium">Amount</th>
+<th class="px-6 py-4 font-medium">Network</th>
+<th class="px-6 py-4 font-medium">Tx Hash</th>
+<th class="px-6 py-4 font-medium text-right">Status</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant/10 text-sm">
+<tr class="hover:bg-white/5 transition-colors">
+<td class="px-6 py-4 font-headline font-medium">Researcher-01</td>
+<td class="px-6 py-4 text-slate-400">Market Analytics Call</td>
+<td class="px-6 py-4 text-secondary font-headline">0.05 USDT</td>
+<td class="px-6 py-4 text-xs font-mono">Sonic-Main</td>
+<td class="px-6 py-4 text-xs font-mono text-slate-500">0x3f...e4a2</td>
+<td class="px-6 py-4 text-right">
+<span class="text-[10px] font-bold text-secondary uppercase tracking-tighter">Verified</span>
+</td>
+</tr>
+<tr class="hover:bg-white/5 transition-colors">
+<td class="px-6 py-4 font-headline font-medium">Execution-04</td>
+<td class="px-6 py-4 text-slate-400">Liquidity Provision</td>
+<td class="px-6 py-4 text-secondary font-headline">12.00 USDT</td>
+<td class="px-6 py-4 text-xs font-mono">Sonic-Main</td>
+<td class="px-6 py-4 text-xs font-mono text-slate-500">0x8a...c911</td>
+<td class="px-6 py-4 text-right">
+<span class="text-[10px] font-bold text-secondary uppercase tracking-tighter">Verified</span>
+</td>
+</tr>
+<tr class="hover:bg-white/5 transition-colors">
+<td class="px-6 py-4 font-headline font-medium">Manager-Root</td>
+<td class="px-6 py-4 text-slate-400">Contract Whitelisting</td>
+<td class="px-6 py-4 text-secondary font-headline">0.00 USDT</td>
+<td class="px-6 py-4 text-xs font-mono">Sonic-Main</td>
+<td class="px-6 py-4 text-xs font-mono text-slate-500">0x12...f33d</td>
+<td class="px-6 py-4 text-right">
+<span class="text-[10px] font-bold text-primary uppercase tracking-tighter">Safe</span>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="w-full py-4 mt-auto border-t border-purple-500/5 flex justify-between items-center px-8 bg-transparent">
+<div class="flex items-center gap-6">
+<span class="font-label text-[10px] uppercase tracking-widest text-[#4cd7f6] opacity-60">© 2024 AgentPay Sentinel. System Heartbeat: 64ms</span>
+</div>
+<div class="flex gap-6">
+<a class="font-label text-[10px] uppercase tracking-widest text-slate-600 hover:text-[#ddb7ff] transition-opacity duration-300" href="#">Docs</a>
+<a class="font-label text-[10px] uppercase tracking-widest text-slate-600 hover:text-[#ddb7ff] transition-opacity duration-300" href="#">Security</a>
+<a class="font-label text-[10px] uppercase tracking-widest text-slate-600 hover:text-[#ddb7ff] transition-opacity duration-300" href="#">API</a>
+</div>
+</footer>
+</div>
+</body></html>

@@ -1,0 +1,23 @@
+[
+  {
+    "task_id": "task-123",
+    "agent_name": "Research Agent",
+    "amount": 0.5,
+    "tx_hash": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
+    "timestamp": "2026-03-17T18:51:17.620Z"
+  },
+  {
+    "task_id": "0x7c398f234d12f00de725ccf781d988fdca3f4751d8a755156a347fd838801f29",
+    "agent_name": "Research Agent",
+    "amount": 0.01,
+    "tx_hash": "0x7c398f234d12f00de725ccf781d988fdca3f4751d8a755156a347fd838801f29",
+    "timestamp": "2026-03-20T13:04:11.981Z"
+  },
+  {
+    "task_id": "0x0e3db097d2c6c96345e14367be9ee70402b0736192b92a7b5ae5674b5d055cc7",
+    "agent_name": "Research Agent",
+    "amount": 2,
+    "tx_hash": "0x0e3db097d2c6c96345e14367be9ee70402b0736192b92a7b5ae5674b5d055cc7",
+    "timestamp": "2026-03-20T13:55:54.070Z"
+  }
+]
