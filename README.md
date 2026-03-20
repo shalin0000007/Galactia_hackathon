@@ -39,7 +39,7 @@ graph TD
     subgraph "WDK Safety Layer"
         QualityGate -->|Approved| Guard["WalletGuard<br/>Permissions · Whitelisting · Caps"]
         Guard -->|Validated| WDK["WDK Wallet Service<br/>@tetherto/wdk-wallet-evm"]
-        WDK -->|ERC20 transfer()| Sonic["Sonic Network<br/>Chain ID 146"]
+        WDK -->|"ERC20 transfer()"| Sonic["Sonic Network<br/>Chain ID 146"]
     end
 
     subgraph "Observability"
